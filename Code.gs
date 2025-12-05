@@ -5,8 +5,46 @@ function doGet() {
 }
 
 function getBoxData() {
-  // Data from boxes.csv
-  var data = {
+  // Get spreadsheet - this should be the ID of your Google Sheet
+  // Format: First row = feature names, first column = box names, rest = ratings
+  var spreadsheetId = '1gbjglMTevhggevV5L9BOijBAe939sFz6P-v4-QKmGAQ';
+  var sheet = SpreadsheetApp.openById(spreadsheetId).getSheetByName('BoxData');
+  
+  if (!sheet) {
+    // Return default data if sheet doesn't exist
+    return getDefaultBoxData();
+  }
+  
+  var data = sheet.getDataRange().getValues();
+  
+  // First row contains feature names (skip first cell which is empty or "Box")
+  var features = data[0].slice(1);
+  
+  // Build boxes object from remaining rows
+  var boxes = {};
+  for (var i = 1; i < data.length; i++) {
+    var boxName = data[i][0];
+    var ratings = data[i].slice(1);
+    
+    // Convert ratings to numbers and filter out empty cells
+    ratings = ratings.map(function(val) {
+      return val ? parseInt(val) || 0 : 0;
+    });
+    
+    if (boxName) {
+      boxes[boxName] = ratings;
+    }
+  }
+  
+  return {
+    features: features,
+    boxes: boxes
+  };
+}
+
+function getDefaultBoxData() {
+  // Default data fallback if sheet is not found
+  return {
     features: [
       'Full quality audio (may be PCM decode on box)',
       'Passthrough audio',
@@ -26,8 +64,6 @@ function getBoxData() {
       'Two box solution': [10, 10, 10, 10, 1, 10, 10, 10, 1]
     }
   };
-  
-  return data;
 }
 
 function calculateRecommendation(userWeights) {
