@@ -344,17 +344,6 @@
         // Convert to 5-star rating (0-100% maps to 0-5 stars)
         var stars = Math.round(matchQuality / 20);
         
-        // Deduct one star if user marked any feature as most important (1) and the box doesn't have it (10)
-        for (var i = 0; i < boxData.features.length; i++) {
-          var slider = document.getElementById('slider-' + i);
-          var userImportance = slider ? parseInt(slider.value, 10) : 5;
-          var boxRating = boxData.boxes[box][i];
-          if (userImportance === 1 && boxRating === 10) {
-            stars = Math.max(0, stars - 1);
-            break; // Only deduct once per box
-          }
-        }
-        
         var starDisplay = '★'.repeat(stars) + '☆'.repeat(5 - stars);
         
         html += '<tr class="' + isWinner + '">';

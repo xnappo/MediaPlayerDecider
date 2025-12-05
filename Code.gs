@@ -188,6 +188,7 @@ function calculateRecommendation(userWeights) {
   for (var boxName in data.boxes) {
     var boxScores = data.boxes[boxName];
     var totalScore = 0;
+    var criticalMissCount = 0;
     
     for (var i = 0; i < boxScores.length; i++) {
       // Importance: 1 (most important) -> weight 10, 10 (least) -> weight 1
@@ -195,7 +196,15 @@ function calculateRecommendation(userWeights) {
       // Device ratings already use 1 = best, 10 = worst
       var ratingLowIsBest = boxScores[i];
       totalScore += ratingLowIsBest * weight;
+      
+      // Penalize for critical features missing: user marks as 1 (most important) but box doesn't have it (10)
+      if (userWeights[i] === 1 && ratingLowIsBest === 10) {
+        criticalMissCount++;
+      }
     }
+    
+    // Add penalty for each critical missing feature (big penalty per miss to affect ranking)
+    totalScore += criticalMissCount * 50;
     
     rawScores[boxName] = totalScore;
   }

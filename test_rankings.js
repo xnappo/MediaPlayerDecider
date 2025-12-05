@@ -62,6 +62,7 @@ function calculateRecommendation(userWeights) {
   for (const boxName in boxData.boxes) {
     const boxScores = boxData.boxes[boxName];
     let totalScore = 0;
+    let criticalMissCount = 0;
     
     for (let i = 0; i < boxScores.length; i++) {
       // Importance: 1 (most important) -> weight 10, 10 (least) -> weight 1
@@ -69,7 +70,15 @@ function calculateRecommendation(userWeights) {
       // Device ratings already use 1=best, 10=worst in data
       const ratingLowIsBest = boxScores[i];
       totalScore += ratingLowIsBest * weight;
+      
+      // Penalize for critical features missing: user marks as 1 (most important) but box doesn't have it (10)
+      if (userWeights[i] === 1 && ratingLowIsBest === 10) {
+        criticalMissCount++;
+      }
     }
+    
+    // Add penalty for each critical missing feature (big penalty per miss to affect ranking)
+    totalScore += criticalMissCount * 50;
     
     rawScores[boxName] = totalScore;
   }
@@ -94,23 +103,13 @@ function calculateRecommendation(userWeights) {
   return { raw: rawScores, normalized: normalizedResults };
 }
 
-// Calculate star ratings with deduction logic
-function calculateStars(boxName, normalizedScore, userWeights) {
+// Calculate star ratings (no deduction needed, penalty already in score)
+function calculateStars(boxName, normalizedScore) {
   // Convert score to match quality percentage (1 = 100%, 10 = 0%)
   const matchQuality = Math.max(0, Math.min(100, ((11 - normalizedScore) / 9) * 100));
   
   // Convert to 5-star rating (0-100% maps to 0-5 stars)
-  let stars = Math.round(matchQuality / 20);
-  
-  // Deduct one star if user marked any feature as most important (1) and the box doesn't have it (10)
-  for (let i = 0; i < boxData.features.length; i++) {
-    const userImportance = userWeights[i];
-    const boxRating = boxData.boxes[boxName][i];
-    if (userImportance === 1 && boxRating === 10) {
-      stars = Math.max(0, stars - 1);
-      break; // Only deduct once per box
-    }
-  }
+  const stars = Math.round(matchQuality / 20);
   
   return stars;
 }
@@ -146,7 +145,7 @@ testCases.forEach(testCase => {
     .sort((a, b) => a[1] - b[1]);
   
   sorted.forEach(([box, score]) => {
-    const stars = calculateStars(box, score, testCase.userWeights);
+    const stars = calculateStars(box, score);
     const starDisplay = '★'.repeat(stars) + '☆'.repeat(5 - stars);
     console.log(`  ${box}: ${score.toFixed(2)} ${starDisplay}`);
   });
