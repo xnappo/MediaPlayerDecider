@@ -8,13 +8,27 @@ function getBoxData() {
   // Prefer loading CSV from GitHub (keeps data separate from code)
   var csvUrl = 'https://raw.githubusercontent.com/xnappo/MediaPlayerDecider/main/boxes.csv';
   try {
-    var response = UrlFetchApp.fetch(csvUrl, { muteHttpExceptions: true });
-    if (response.getResponseCode() === 200) {
+    // Cache-bust so we always fetch latest
+    var response = UrlFetchApp.fetch(csvUrl + '?t=' + Date.now(), { muteHttpExceptions: true });
+    var status = response.getResponseCode();
+    if (status === 200) {
       var csvData = response.getContentText();
-      return parseCSV(csvData);
+      if (csvData && csvData.trim()) {
+        return parseCSV(csvData);
+      }
     }
   } catch (e) {
     // Fallback to default data below
+  }
+
+  // Fallback 1: CSV stored as an Apps Script HTML file (keeps data separate from code file)
+  try {
+    var embedded = HtmlService.createHtmlOutputFromFile('boxes').getContent();
+    if (embedded && embedded.trim()) {
+      return parseCSV(embedded);
+    }
+  } catch (e2) {
+    // ignore and continue to hardcoded fallback
   }
 
   // Fallback to embedded defaults if fetch fails
