@@ -168,11 +168,12 @@ function calculateRecommendation(userWeights) {
     var totalScore = 0;
     
     for (var i = 0; i < boxScores.length; i++) {
-      // Lower importance value (1) means higher weight
-      // Weight: 11 - userWeight gives us 10 for importance 1, down to 1 for importance 10
+      // Importance: 1 (most important) -> weight 10, 10 (least) -> weight 1
       var weight = 11 - userWeights[i];
-      // Box ratings: 10 is best, 1 is worst - multiply directly (higher is better)
-      totalScore += boxScores[i] * weight;
+      // Device ratings are now aligned so that 1 = best, 10 = worst.
+      // Existing data in YAML is 10 = best, so convert: ratingLowIsBest = 11 - ratingHighIsBest
+      var ratingLowIsBest = 11 - boxScores[i];
+      totalScore += ratingLowIsBest * weight;
     }
     
     rawScores[boxName] = totalScore;
