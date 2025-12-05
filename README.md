@@ -6,6 +6,19 @@
 
 ## How to Deploy:
 
+### Option 1: Using Clasp (Recommended for development)
+
+1. Install Node.js and WSL with Ubuntu
+2. Clone this repository
+3. Run: `wsl npx @google/clasp login`
+4. Authorize with your Google account
+5. The `.clasp.json` file links to the existing Google Apps Script project
+6. To push changes: `wsl npx @google/clasp push`
+7. To pull from Google: `wsl npx @google/clasp pull`
+8. Deploy via Google Apps Script editor or use `clasp deploy`
+
+### Option 2: Manual (One-time setup)
+
 1. Go to [script.google.com](https://script.google.com)
 2. Click "New Project"
 3. Delete the default Code.gs content and paste the content from `Code.gs`

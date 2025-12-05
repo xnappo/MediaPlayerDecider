@@ -1,0 +1,16 @@
+# Clasp OAuth token
+.clasp.json
+
+# Node modules
+node_modules/
+package-lock.json
+
+# OS files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
