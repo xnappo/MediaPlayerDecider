@@ -1,8 +1,12 @@
 // Test interface for Box Recommendation Tool
 // Run this with: node test_rankings.js
 
-// Sample box data (same structure as boxes.html)
+// Sample box data (same structure as boxes.html JSON)
 const boxData = {
+  featureKeys: [
+    'speed', 'audio_qual', 'audio_pass', 'video_codec', 'video_convert',
+    'box_single', 'robust', 'os_control', 'vendor', 'cost'
+  ],
   features: [
     'Speed',
     'Full quality audio (may be PCM decode on box)',
@@ -16,15 +20,47 @@ const boxData = {
     'Cost'
   ],
   boxes: {
-    'Shield': [1, 1, 1, 10, 10, 1, 1, 1, 8, 8],
-    'Fire Cube 3': [8, 4, 4, 1, 1, 1, 1, 8, 1, 5],
-    'Homatics Box R': [5, 1, 1, 1, 1, 1, 4, 2, 8, 6],
-    'Apple TV': [2, 1, 7, 1, 1, 4, 1, 10, 1, 5],
-    'Onn': [5, 7, 10, 1, 1, 1, 1, 1, 3, 1],
-    'Google Streamer': [5, 7, 10, 1, 1, 1, 1, 1, 3, 2],
-    'Two box solutions': [3, 1, 1, 1, 1, 10, 1, 1, 1, 10]
+    'Shield': {
+      speed: 1, audio_qual: 1, audio_pass: 1, video_codec: 10, video_convert: 10,
+      box_single: 1, robust: 1, os_control: 1, vendor: 8, cost: 8
+    },
+    'Fire Cube 3': {
+      speed: 8, audio_qual: 4, audio_pass: 4, video_codec: 1, video_convert: 1,
+      box_single: 1, robust: 1, os_control: 8, vendor: 1, cost: 5
+    },
+    'Homatics Box R 4K Plus': {
+      speed: 5, audio_qual: 1, audio_pass: 1, video_codec: 1, video_convert: 1,
+      box_single: 1, robust: 4, os_control: 2, vendor: 8, cost: 6
+    },
+    'Apple TV': {
+      speed: 2, audio_qual: 1, audio_pass: 10, video_codec: 1, video_convert: 1,
+      box_single: 4, robust: 1, os_control: 10, vendor: 1, cost: 5
+    },
+    'Onn': {
+      speed: 5, audio_qual: 7, audio_pass: 10, video_codec: 1, video_convert: 1,
+      box_single: 1, robust: 1, os_control: 1, vendor: 3, cost: 1
+    },
+    'Google Streamer': {
+      speed: 5, audio_qual: 7, audio_pass: 10, video_codec: 1, video_convert: 1,
+      box_single: 1, robust: 1, os_control: 1, vendor: 3, cost: 2
+    },
+    'Two box solutions': {
+      speed: 3, audio_qual: 1, audio_pass: 1, video_codec: 1, video_convert: 1,
+      box_single: 10, robust: 1, os_control: 1, vendor: 1, cost: 10
+    }
   }
 };
+
+// Convert JSON object format to array format for algorithm
+function getBoxesAsArrays() {
+  const keys = boxData.featureKeys;
+  const result = {};
+  for (const boxName in boxData.boxes) {
+    const boxObj = boxData.boxes[boxName];
+    result[boxName] = keys.map(key => boxObj[key]);
+  }
+  return { features: boxData.features, boxes: result };
+}
 
 // Test case: user importance ratings (1=most important, 10=least important)
 const testCases = [
@@ -56,11 +92,12 @@ const testCases = [
 
 // Algorithm (matches Code.gs)
 function calculateRecommendation(userWeights) {
+  const data = getBoxesAsArrays();
   const rawScores = {};
   
   // Calculate weighted score for each box
-  for (const boxName in boxData.boxes) {
-    const boxScores = boxData.boxes[boxName];
+  for (const boxName in data.boxes) {
+    const boxScores = data.boxes[boxName];
     let totalScore = 0;
     let criticalMissCount = 0;
     

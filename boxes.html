@@ -1,99 +1,114 @@
-<script type="text/plain" id="yaml-data">
-# Boxes and feature ratings (1=best, 10=worst)
-features:
-  - Speed
-  - Full quality audio (may be PCM decode on box)
-  - Passthrough audio
-  - Modern video codec support
-  - Conversions of all formats to LLDV/DV
-  - Single box for streaming and local media
-  - Robustness
-  - OS/Software Control
-  - Vendor support
-  - Cost
-
-boxes:
-  Shield:
-    Speed: 1
-    Full quality audio (may be PCM decode on box): 1
-    Passthrough audio: 1
-    Modern video codec support: 10
-    Conversions of all formats to LLDV/DV: 10
-    Single box for streaming and local media: 1
-    Robustness: 1
-    OS/Software Control: 1
-    Vendor support: 8
-    Cost: 8
-
-  Fire Cube 3:
-    Speed: 8
-    Full quality audio (may be PCM decode on box): 4
-    Passthrough audio: 4
-    Modern video codec support: 1
-    Conversions of all formats to LLDV/DV: 1
-    Single box for streaming and local media: 1
-    Robustness: 1
-    OS/Software Control: 8
-    Vendor support: 1
-    Cost: 5
-
-  Homatics Box R 4K Plus:
-    Speed: 5
-    Full quality audio (may be PCM decode on box): 1
-    Passthrough audio: 1
-    Modern video codec support: 1
-    Conversions of all formats to LLDV/DV: 1
-    Single box for streaming and local media: 1
-    Robustness: 4
-    OS/Software Control: 2
-    Vendor support: 8
-    Cost: 6
-
-  Apple TV:
-    Speed: 2
-    Full quality audio (may be PCM decode on box): 1
-    Passthrough audio: 10
-    Modern video codec support: 1
-    Conversions of all formats to LLDV/DV: 1
-    Single box for streaming and local media: 4
-    Robustness: 1
-    OS/Software Control: 10
-    Vendor support: 1
-    Cost: 5
-
-  Onn:
-    Speed: 5
-    Full quality audio (may be PCM decode on box): 7
-    Passthrough audio: 10
-    Modern video codec support: 1
-    Conversions of all formats to LLDV/DV: 1
-    Single box for streaming and local media: 1
-    Robustness: 1
-    OS/Software Control: 1
-    Vendor support: 3
-    Cost: 1
-
-  Google Streamer:
-    Speed: 5
-    Full quality audio (may be PCM decode on box): 7
-    Passthrough audio: 10
-    Modern video codec support: 1
-    Conversions of all formats to LLDV/DV: 1
-    Single box for streaming and local media: 1
-    Robustness: 1
-    OS/Software Control: 1
-    Vendor support: 3
-    Cost: 2
-
-  Two box solutions:
-    Speed: 3
-    Full quality audio (may be PCM decode on box): 1
-    Passthrough audio: 1
-    Modern video codec support: 1
-    Conversions of all formats to LLDV/DV: 1
-    Single box for streaming and local media: 10
-    Robustness: 1
-    OS/Software Control: 1
-    Vendor support: 1
-    Cost: 10
+<script type="text/plain" id="box-data">
+{
+  "featureKeys": [
+    "speed",
+    "audio_qual",
+    "audio_pass",
+    "video_codec",
+    "video_convert",
+    "box_single",
+    "robust",
+    "os_control",
+    "vendor",
+    "cost"
+  ],
+  "featureLabels": [
+    "Speed",
+    "Full quality audio (may be PCM decode on box)",
+    "Passthrough audio",
+    "Modern video codec support",
+    "Conversions of all formats to LLDV/DV",
+    "Single box for streaming and local media",
+    "Robustness",
+    "OS/Software Control",
+    "Vendor support",
+    "Cost"
+  ],
+  "boxes": {
+    "Shield": {
+      "speed": 1,
+      "audio_qual": 1,
+      "audio_pass": 1,
+      "video_codec": 10,
+      "video_convert": 10,
+      "box_single": 1,
+      "robust": 1,
+      "os_control": 1,
+      "vendor": 8,
+      "cost": 8
+    },
+    "Fire Cube 3": {
+      "speed": 8,
+      "audio_qual": 4,
+      "audio_pass": 4,
+      "video_codec": 1,
+      "video_convert": 1,
+      "box_single": 1,
+      "robust": 1,
+      "os_control": 8,
+      "vendor": 1,
+      "cost": 5
+    },
+    "Homatics Box R 4K Plus": {
+      "speed": 5,
+      "audio_qual": 1,
+      "audio_pass": 1,
+      "video_codec": 1,
+      "video_convert": 1,
+      "box_single": 1,
+      "robust": 4,
+      "os_control": 2,
+      "vendor": 8,
+      "cost": 6
+    },
+    "Apple TV": {
+      "speed": 2,
+      "audio_qual": 1,
+      "audio_pass": 10,
+      "video_codec": 1,
+      "video_convert": 1,
+      "box_single": 4,
+      "robust": 1,
+      "os_control": 10,
+      "vendor": 1,
+      "cost": 5
+    },
+    "Onn": {
+      "speed": 5,
+      "audio_qual": 7,
+      "audio_pass": 10,
+      "video_codec": 1,
+      "video_convert": 1,
+      "box_single": 1,
+      "robust": 1,
+      "os_control": 1,
+      "vendor": 3,
+      "cost": 1
+    },
+    "Google Streamer": {
+      "speed": 5,
+      "audio_qual": 7,
+      "audio_pass": 10,
+      "video_codec": 1,
+      "video_convert": 1,
+      "box_single": 1,
+      "robust": 1,
+      "os_control": 1,
+      "vendor": 3,
+      "cost": 2
+    },
+    "Two box solutions": {
+      "speed": 3,
+      "audio_qual": 1,
+      "audio_pass": 1,
+      "video_codec": 1,
+      "video_convert": 1,
+      "box_single": 10,
+      "robust": 1,
+      "os_control": 1,
+      "vendor": 1,
+      "cost": 10
+    }
+  }
+}
 </script>

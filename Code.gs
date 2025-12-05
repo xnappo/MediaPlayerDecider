@@ -5,168 +5,64 @@ function doGet() {
 }
 
 function getBoxData() {
-  // Primary source: YAML stored in boxes.html (easy to edit/read)
+  // Primary source: JSON stored in boxes.html (easy to edit/read)
   try {
     var embedded = HtmlService.createHtmlOutputFromFile('boxes').getContent();
-    var yaml = extractDataFromHtml(embedded, 'yaml-data');
-    if (yaml && yaml.trim()) {
-      return parseYamlData(yaml);
+    var jsonStr = extractDataFromHtml(embedded, 'box-data');
+    if (jsonStr && jsonStr.trim()) {
+      var parsed = JSON.parse(jsonStr);
+      return convertJsonToBoxData(parsed);
     }
   } catch (e) {
     // ignore and continue to hardcoded fallback
   }
 
-  // Fallback to embedded defaults (1 = best, 10 = worst) kept in sync with boxes.html
-  var fallbackYaml = [
-    '# Boxes and feature ratings (1 = best, 10 = worst)',
-    'features:',
-    '  - Speed',
-    '  - Full quality audio (may be PCM decode on box)',
-    '  - Passthrough audio',
-    '  - Modern video codec support',
-    '  - Conversions of all formats to LLDV/DV',
-    '  - Single box for streaming and local media',
-    '  - Robustness',
-    '  - OS/Software Control',
-    '  - Vendor support',
-    '  - Cost',
-    'boxes:',
-    '  Shield:',
-    '    Speed: 1',
-    '    Full quality audio (may be PCM decode on box): 1',
-    '    Passthrough audio: 1',
-    '    Modern video codec support: 10',
-    '    Conversions of all formats to LLDV/DV: 10',
-    '    Single box for streaming and local media: 1',
-    '    Robustness: 1',
-    '    OS/Software Control: 1',
-    '    Vendor support: 8',
-    '    Cost: 8',
-    '  Fire Cube 3:',
-    '    Speed: 8',
-    '    Full quality audio (may be PCM decode on box): 4',
-    '    Passthrough audio: 4',
-    '    Modern video codec support: 1',
-    '    Conversions of all formats to LLDV/DV: 1',
-    '    Single box for streaming and local media: 1',
-    '    Robustness: 1',
-    '    OS/Software Control: 8',
-    '    Vendor support: 1',
-    '    Cost: 5',
-    '  Homatics Box R:',
-    '    Speed: 5',
-    '    Full quality audio (may be PCM decode on box): 1',
-    '    Passthrough audio: 1',
-    '    Modern video codec support: 1',
-    '    Conversions of all formats to LLDV/DV: 1',
-    '    Single box for streaming and local media: 1',
-    '    Robustness: 4',
-    '    OS/Software Control: 2',
-    '    Vendor support: 8',
-    '    Cost: 6',
-    '  Apple TV:',
-    '    Speed: 2',
-    '    Full quality audio (may be PCM decode on box): 1',
-    '    Passthrough audio: 7',
-    '    Modern video codec support: 1',
-    '    Conversions of all formats to LLDV/DV: 1',
-    '    Single box for streaming and local media: 4',
-    '    Robustness: 1',
-    '    OS/Software Control: 10',
-    '    Vendor support: 1',
-    '    Cost: 5',
-    '  Onn:',
-    '    Speed: 5',
-    '    Full quality audio (may be PCM decode on box): 7',
-    '    Passthrough audio: 10',
-    '    Modern video codec support: 1',
-    '    Conversions of all formats to LLDV/DV: 1',
-    '    Single box for streaming and local media: 1',
-    '    Robustness: 1',
-    '    OS/Software Control: 1',
-    '    Vendor support: 3',
-    '    Cost: 1',
-    '  Google Streamer:',
-    '    Speed: 5',
-    '    Full quality audio (may be PCM decode on box): 7',
-    '    Passthrough audio: 10',
-    '    Modern video codec support: 1',
-    '    Conversions of all formats to LLDV/DV: 1',
-    '    Single box for streaming and local media: 1',
-    '    Robustness: 1',
-    '    OS/Software Control: 1',
-    '    Vendor support: 3',
-    '    Cost: 2',
-    '  Two box solutions:',
-    '    Speed: 3',
-    '    Full quality audio (may be PCM decode on box): 1',
-    '    Passthrough audio: 1',
-    '    Modern video codec support: 1',
-    '    Conversions of all formats to LLDV/DV: 1',
-    '    Single box for streaming and local media: 10',
-    '    Robustness: 1',
-    '    OS/Software Control: 1',
-    '    Vendor support: 1',
-    '    Cost: 10'
-  ].join('\n');
-  return parseYamlData(fallbackYaml);
+  // Fallback to embedded defaults if boxes.html missing/empty
+  return getDefaultBoxData();
 }
 
-function parseYamlData(yaml) {
-  if (!yaml) return { features: [], boxes: {} };
-  var lines = yaml.replace(/\r/g, '').split('\n');
-  var features = [];
-  var boxFeatureMaps = {};
-  var section = '';
-  var currentBox = '';
-
-  lines.forEach(function(line) {
-    var raw = line;
-    var trimmed = raw.trim();
-    if (!trimmed || trimmed.startsWith('#')) return;
-    if (trimmed === 'features:') { section = 'features'; return; }
-    if (trimmed === 'boxes:') { section = 'boxes'; currentBox = ''; return; }
-
-    if (section === 'features') {
-      if (trimmed.startsWith('- ')) {
-        features.push(trimmed.slice(2).trim());
-      }
-      return;
-    }
-
-    if (section === 'boxes') {
-      // Box name line: "BoxName:" at indent 0-2
-      if (!raw.startsWith('    ') && trimmed.endsWith(':')) {
-        currentBox = trimmed.slice(0, -1).trim();
-        if (currentBox && !boxFeatureMaps[currentBox]) {
-          boxFeatureMaps[currentBox] = {};
-        }
-        return;
-      }
-      // Feature line under a box: "  Feature: value"
-      if (currentBox && raw.match(/^\s{2,}\S/)) {
-        var idx = trimmed.indexOf(':');
-        if (idx === -1) return;
-        var fname = trimmed.slice(0, idx).trim();
-        var valText = trimmed.slice(idx + 1).trim();
-        var num = parseInt(valText, 10);
-        if (fname && !isNaN(num)) {
-          boxFeatureMaps[currentBox][fname] = num;
-        }
-      }
-    }
-  });
-
-  // Build arrays in feature order
+function convertJsonToBoxData(json) {
+  // Convert from {featureKeys, featureLabels, boxes} to {features, boxes: {boxName: [scores]}}
+  var features = json.featureLabels || [];
+  var keys = json.featureKeys || [];
   var boxes = {};
-  Object.keys(boxFeatureMaps).forEach(function(boxName) {
-    boxes[boxName] = features.map(function(f) {
-      var v = boxFeatureMaps[boxName][f];
-      return (typeof v === 'number' && !isNaN(v)) ? v : 0;
+  
+  for (var boxName in json.boxes) {
+    var boxObj = json.boxes[boxName];
+    boxes[boxName] = keys.map(function(key) {
+      var val = boxObj[key];
+      return (typeof val === 'number' && !isNaN(val)) ? val : 0;
     });
-  });
-
+  }
+  
   return { features: features, boxes: boxes };
+}
+
+function getDefaultBoxData() {
+  // Fallback data matching current boxes
+  return {
+    features: [
+      "Speed",
+      "Full quality audio (may be PCM decode on box)",
+      "Passthrough audio",
+      "Modern video codec support",
+      "Conversions of all formats to LLDV/DV",
+      "Single box for streaming and local media",
+      "Robustness",
+      "OS/Software Control",
+      "Vendor support",
+      "Cost"
+    ],
+    boxes: {
+      "Shield": [1, 1, 1, 10, 10, 1, 1, 1, 8, 8],
+      "Fire Cube 3": [8, 4, 4, 1, 1, 1, 1, 8, 1, 5],
+      "Homatics Box R 4K Plus": [5, 1, 1, 1, 1, 1, 4, 2, 8, 6],
+      "Apple TV": [2, 1, 10, 1, 1, 4, 1, 10, 1, 5],
+      "Onn": [5, 7, 10, 1, 1, 1, 1, 1, 3, 1],
+      "Google Streamer": [5, 7, 10, 1, 1, 1, 1, 1, 3, 2],
+      "Two box solutions": [3, 1, 1, 1, 1, 10, 1, 1, 1, 10]
+    }
+  };
 }
 
 function extractDataFromHtml(html, id) {
