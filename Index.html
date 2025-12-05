@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+    }
+    
+    .container {
+      background-color: #2d2d2d;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+    
+    h1 {
+      color: #ffffff;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #b0b0b0;
+      margin-bottom: 30px;
+      font-style: italic;
+    }
+    
+    .feature-row {
+      margin-bottom: 25px;
+      padding: 15px;
+      background-color: #3a3a3a;
+      border-radius: 5px;
+    }
+    
+    .feature-label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .importance-value {
+      font-size: 18px;
+      color: #4a9eff;
+      font-weight: bold;
+      min-width: 30px;
+      text-align: right;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      border-radius: 5px;
+      background: #555;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #4a9eff;
+      cursor: pointer;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #4a9eff;
+      cursor: pointer;
+      border: none;
+    }
+    
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #888;
+      margin-top: 5px;
+    }
+    
+    .calculate-btn {
+      background-color: #4a9eff;
+      color: white;
+      border: none;
+      padding: 15px 40px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin: 30px auto;
+      transition: background-color 0.3s;
+    }
+    
+    .calculate-btn:hover {
+      background-color: #3a8eef;
+    }
+    
+    .calculate-btn:active {
+      background-color: #2a7edf;
+    }
+    
+    #results {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #3a3a3a;
+      border-radius: 5px;
+      display: none;
+    }
+    
+    .recommendation {
+      font-size: 24px;
+      font-weight: bold;
+      color: #4a9eff;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .scores-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    
+    .scores-table th,
+    .scores-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #555;
+    }
+    
+    .scores-table th {
+      background-color: #4a9eff;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .scores-table tr:hover {
+      background-color: #454545;
+    }
+    
+    .winner {
+      background-color: #2a4a2a !important;
+      font-weight: bold;
+    }
+    
+    .score-bar {
+      height: 20px;
+      border-radius: 3px;
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+    }
+    
+    .score-bar-good {
+      background-color: #28a745;
+    }
+    
+    .score-bar-medium {
+      background-color: #ffc107;
+    }
+    
+    .score-bar-poor {
+      background-color: #dc3545;
+    }
+    
+    .loading {
+      text-align: center;
+      color: #b0b0b0;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📦 Streaming Box Recommendation Tool</h1>
+    <p class="subtitle">Rate the importance of each feature (1 = Most Important, 10 = Least Important)</p>
+    
+    <div id="features-container"></div>
+    
+    <button class="calculate-btn" onclick="calculateRecommendation()">
+      Get Recommendation
+    </button>
+    
+    <div id="results"></div>
+  </div>
+
+  <script>
+    var boxData;
+    
+    // Load data when page loads
+    window.onload = function() {
+      google.script.run
+        .withSuccessHandler(initializeSliders)
+        .getBoxData();
+    };
+    
+    function initializeSliders(data) {
+      boxData = data;
+      var container = document.getElementById('features-container');
+      
+      data.features.forEach(function(feature, index) {
+        var featureDiv = document.createElement('div');
+        featureDiv.className = 'feature-row';
+        
+        featureDiv.innerHTML = `
+          <div class="feature-label">
+            <span>${feature}</span>
+            <span class="importance-value" id="value-${index}">5</span>
+          </div>
+          <input type="range" 
+                 id="slider-${index}" 
+                 min="1" 
+                 max="10" 
+                 value="5" 
+                 oninput="updateValue(${index})">
+          <div class="slider-labels">
+            <span>Most Important (1)</span>
+            <span>Least Important (10)</span>
+          </div>
+        `;
+        
+        container.appendChild(featureDiv);
+      });
+    }
+    
+    function updateValue(index) {
+      var slider = document.getElementById('slider-' + index);
+      var valueDisplay = document.getElementById('value-' + index);
+      valueDisplay.textContent = slider.value;
+    }
+    
+    function calculateRecommendation() {
+      // Collect all user weights
+      var userWeights = [];
+      for (var i = 0; i < boxData.features.length; i++) {
+        var slider = document.getElementById('slider-' + i);
+        userWeights.push(parseInt(slider.value));
+      }
+      
+      // Show loading
+      var resultsDiv = document.getElementById('results');
+      resultsDiv.style.display = 'block';
+      resultsDiv.innerHTML = '<div class="loading">Calculating...</div>';
+      
+      // Call server-side function
+      google.script.run
+        .withSuccessHandler(displayResults)
+        .calculateRecommendation(userWeights);
+    }
+    
+    function displayResults(scores) {
+      // Find the winner (lowest score)
+      var minScore = Infinity;
+      var winner = '';
+      for (var box in scores) {
+        if (scores[box] < minScore) {
+          minScore = scores[box];
+          winner = box;
+        }
+      }
+      
+      // Sort boxes by score (ascending - lower is better)
+      var sortedBoxes = Object.keys(scores).sort(function(a, b) {
+        return scores[a] - scores[b];
+      });
+      
+      // Build results HTML
+      var html = '<div class="recommendation">🏆 Recommended: ' + winner + '</div>';
+      html += '<table class="scores-table">';
+      html += '<tr><th>Box</th><th>Match Quality</th></tr>';
+      
+      sortedBoxes.forEach(function(box) {
+        var isWinner = box === winner ? ' winner' : '';
+        var score = scores[box];
+        // Convert score to match quality percentage (1 = 100%, 10 = 0%)
+        var matchQuality = Math.max(0, Math.min(100, ((11 - score) / 9) * 100));
+        
+        // Convert to 5-star rating (0-100% maps to 0-5 stars)
+        var stars = Math.round(matchQuality / 20);
+        var starDisplay = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+        
+        html += '<tr class="' + isWinner + '">';
+        html += '<td>' + box + '</td>';
+        html += '<td style="font-size: 24px; color: #ffd700;">' + starDisplay + '</td>';
+        html += '</tr>';
+      });
+      
+      html += '</table>';
+      
+      document.getElementById('results').innerHTML = html;
+    }
+  </script>
+</body>
+</html>
