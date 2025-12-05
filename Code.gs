@@ -5,15 +5,26 @@ function doGet() {
 }
 
 function getBoxData() {
-  // CSV data embedded in the code (synced from boxes.csv in GitHub repo)
-  var csvData = `Box,Full quality audio (may be PCM decode on box),Passthrough audio,Modern video codec support,Conversions of all formats to LLDV/DV,Single box for streaming and local media,Robustness,OS/Software Control,Vendor support,Cost
-Shield,10,10,1,1,10,10,10,3,3
-Fire Cube 3,7,7,10,10,10,10,3,10,6
-Homatics Box R,10,10,10,10,10,7,9,3,5
-Apple TV,10,4,10,10,7,10,1,10,6
-Two box solution,10,10,10,10,1,10,10,10,1`;
-  
-  return parseCSV(csvData);
+  // Prefer loading CSV from GitHub (keeps data separate from code)
+  var csvUrl = 'https://raw.githubusercontent.com/xnappo/MediaPlayerDecider/main/boxes.csv';
+  try {
+    var response = UrlFetchApp.fetch(csvUrl, { muteHttpExceptions: true });
+    if (response.getResponseCode() === 200) {
+      var csvData = response.getContentText();
+      return parseCSV(csvData);
+    }
+  } catch (e) {
+    // Fallback to default data below
+  }
+
+  // Fallback to embedded defaults if fetch fails
+  var fallbackCsv = 'Box,Full quality audio (may be PCM decode on box),Passthrough audio,Modern video codec support,Conversions of all formats to LLDV/DV,Single box for streaming and local media,Robustness,OS/Software Control,Vendor support,Cost\n' +
+    'Shield,10,10,1,1,10,10,10,3,3\n' +
+    'Fire Cube 3,7,7,10,10,10,10,3,10,6\n' +
+    'Homatics Box R,10,10,10,10,10,7,9,3,5\n' +
+    'Apple TV,10,4,10,10,7,10,1,10,6\n' +
+    'Two box solution,10,10,10,10,1,10,10,10,1';
+  return parseCSV(fallbackCsv);
 }
 
 function parseCSV(csv) {
