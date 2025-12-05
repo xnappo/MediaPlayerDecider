@@ -5,47 +5,156 @@ function doGet() {
 }
 
 function getBoxData() {
-  // Primary source: boxes.html stored in Apps Script project (easy to edit separately from code)
+  // Primary source: YAML stored in boxes.html (easy to edit/read)
   try {
     var embedded = HtmlService.createHtmlOutputFromFile('boxes').getContent();
-    if (embedded && embedded.trim()) {
-      return parseCSV(embedded);
+    var yaml = extractDataFromHtml(embedded, 'yaml-data');
+    if (yaml && yaml.trim()) {
+      return parseYamlData(yaml);
     }
   } catch (e) {
     // ignore and continue to hardcoded fallback
   }
 
   // Fallback to embedded defaults if boxes.html missing/empty
-  var fallbackCsv = 'Box,Full quality audio (may be PCM decode on box),Passthrough audio,Modern video codec support,Conversions of all formats to LLDV/DV,Single box for streaming and local media,Robustness,OS/Software Control,Vendor support,Cost\n' +
-    'Shield,10,10,1,1,10,10,10,3,3\n' +
-    'Fire Cube 3,7,7,10,10,10,10,3,10,6\n' +
-    'Homatics Box R,10,10,10,10,10,7,9,3,5\n' +
-    'Apple TV,10,4,10,10,7,10,1,10,6\n' +
-    'Two box solution,10,10,10,10,1,10,10,10,1';
-  return parseCSV(fallbackCsv);
+  var fallbackYaml = [
+    '# Boxes and feature ratings (1=worst, 10=best)',
+    'features:',
+    '  - Speed',
+    '  - Full quality audio (may be PCM decode on box)',
+    '  - Passthrough audio',
+    '  - Modern video codec support',
+    '  - Conversions of all formats to LLDV/DV',
+    '  - Single box for streaming and local media',
+    '  - Robustness',
+    '  - OS/Software Control',
+    '  - Vendor support',
+    '  - Cost',
+    'boxes:',
+    '  Shield:',
+    '    Speed: 10',
+    '    Full quality audio (may be PCM decode on box): 10',
+    '    Passthrough audio: 10',
+    '    Modern video codec support: 1',
+    '    Conversions of all formats to LLDV/DV: 1',
+    '    Single box for streaming and local media: 10',
+    '    Robustness: 10',
+    '    OS/Software Control: 10',
+    '    Vendor support: 3',
+    '    Cost: 3',
+    '  Fire Cube 3:',
+    '    Speed: 3',
+    '    Full quality audio (may be PCM decode on box): 7',
+    '    Passthrough audio: 7',
+    '    Modern video codec support: 10',
+    '    Conversions of all formats to LLDV/DV: 10',
+    '    Single box for streaming and local media: 10',
+    '    Robustness: 10',
+    '    OS/Software Control: 3',
+    '    Vendor support: 10',
+    '    Cost: 6',
+    '  Homatics Box R:',
+    '    Speed: 6',
+    '    Full quality audio (may be PCM decode on box): 10',
+    '    Passthrough audio: 10',
+    '    Modern video codec support: 10',
+    '    Conversions of all formats to LLDV/DV: 10',
+    '    Single box for streaming and local media: 10',
+    '    Robustness: 7',
+    '    OS/Software Control: 9',
+    '    Vendor support: 3',
+    '    Cost: 5',
+    '  Apple TV:',
+    '    Speed: 9',
+    '    Full quality audio (may be PCM decode on box): 10',
+    '    Passthrough audio: 4',
+    '    Modern video codec support: 10',
+    '    Conversions of all formats to LLDV/DV: 10',
+    '    Single box for streaming and local media: 7',
+    '    Robustness: 10',
+    '    OS/Software Control: 1',
+    '    Vendor support: 10',
+    '    Cost: 6',
+    '  Two box solutions:',
+    '    Speed: 8',
+    '    Full quality audio (may be PCM decode on box): 10',
+    '    Passthrough audio: 10',
+    '    Modern video codec support: 10',
+    '    Conversions of all formats to LLDV/DV: 10',
+    '    Single box for streaming and local media: 1',
+    '    Robustness: 10',
+    '    OS/Software Control: 10',
+    '    Vendor support: 10',
+    '    Cost: 1'
+  ].join('\n');
+  return parseYamlData(fallbackYaml);
 }
 
-function parseCSV(csv) {
-  var lines = csv.trim().split('\n');
-  var headers = lines[0].split(',').map(function(h) { return h.trim(); });
-  var features = headers.slice(1); // Skip first column (box name)
-  
-  var boxes = {};
-  for (var i = 1; i < lines.length; i++) {
-    var cells = lines[i].split(',').map(function(c) { return c.trim(); });
-    var boxName = cells[0];
-    var ratings = cells.slice(1).map(function(r) {
-      return parseInt(r) || 0;
-    });
-    if (boxName) {
-      boxes[boxName] = ratings;
+function parseYamlData(yaml) {
+  if (!yaml) return { features: [], boxes: {} };
+  var lines = yaml.replace(/\r/g, '').split('\n');
+  var features = [];
+  var boxFeatureMaps = {};
+  var section = '';
+  var currentBox = '';
+
+  lines.forEach(function(line) {
+    var raw = line;
+    var trimmed = raw.trim();
+    if (!trimmed || trimmed.startsWith('#')) return;
+    if (trimmed === 'features:') { section = 'features'; return; }
+    if (trimmed === 'boxes:') { section = 'boxes'; currentBox = ''; return; }
+
+    if (section === 'features') {
+      if (trimmed.startsWith('- ')) {
+        features.push(trimmed.slice(2).trim());
+      }
+      return;
     }
+
+    if (section === 'boxes') {
+      // Box name line: "BoxName:" at indent 0-2
+      if (!raw.startsWith('    ') && trimmed.endsWith(':')) {
+        currentBox = trimmed.slice(0, -1).trim();
+        if (currentBox && !boxFeatureMaps[currentBox]) {
+          boxFeatureMaps[currentBox] = {};
+        }
+        return;
+      }
+      // Feature line under a box: "  Feature: value"
+      if (currentBox && raw.match(/^\s{2,}\S/)) {
+        var idx = trimmed.indexOf(':');
+        if (idx === -1) return;
+        var fname = trimmed.slice(0, idx).trim();
+        var valText = trimmed.slice(idx + 1).trim();
+        var num = parseInt(valText, 10);
+        if (fname && !isNaN(num)) {
+          boxFeatureMaps[currentBox][fname] = num;
+        }
+      }
+    }
+  });
+
+  // Build arrays in feature order
+  var boxes = {};
+  Object.keys(boxFeatureMaps).forEach(function(boxName) {
+    boxes[boxName] = features.map(function(f) {
+      var v = boxFeatureMaps[boxName][f];
+      return (typeof v === 'number' && !isNaN(v)) ? v : 0;
+    });
+  });
+
+  return { features: features, boxes: boxes };
+}
+
+function extractDataFromHtml(html, id) {
+  if (!html) return '';
+  var regex = new RegExp('<script[^>]*id=["\']' + id + '["\'][^>]*>([\\s\\S]*?)<\\/script>', 'i');
+  var match = html.match(regex);
+  if (match && match[1]) {
+    return match[1];
   }
-  
-  return {
-    features: features,
-    boxes: boxes
-  };
+  return '';
 }
 
 
