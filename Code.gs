@@ -5,33 +5,17 @@ function doGet() {
 }
 
 function getBoxData() {
-  // Prefer loading CSV from GitHub (keeps data separate from code)
-  var csvUrl = 'https://raw.githubusercontent.com/xnappo/MediaPlayerDecider/main/boxes.csv';
-  try {
-    // Cache-bust so we always fetch latest
-    var response = UrlFetchApp.fetch(csvUrl + '?t=' + Date.now(), { muteHttpExceptions: true });
-    var status = response.getResponseCode();
-    if (status === 200) {
-      var csvData = response.getContentText();
-      if (csvData && csvData.trim()) {
-        return parseCSV(csvData);
-      }
-    }
-  } catch (e) {
-    // Fallback to default data below
-  }
-
-  // Fallback 1: CSV stored as an Apps Script HTML file (keeps data separate from code file)
+  // Primary source: boxes.html stored in Apps Script project (easy to edit separately from code)
   try {
     var embedded = HtmlService.createHtmlOutputFromFile('boxes').getContent();
     if (embedded && embedded.trim()) {
       return parseCSV(embedded);
     }
-  } catch (e2) {
+  } catch (e) {
     // ignore and continue to hardcoded fallback
   }
 
-  // Fallback to embedded defaults if fetch fails
+  // Fallback to embedded defaults if boxes.html missing/empty
   var fallbackCsv = 'Box,Full quality audio (may be PCM decode on box),Passthrough audio,Modern video codec support,Conversions of all formats to LLDV/DV,Single box for streaming and local media,Robustness,OS/Software Control,Vendor support,Cost\n' +
     'Shield,10,10,1,1,10,10,10,3,3\n' +
     'Fire Cube 3,7,7,10,10,10,10,3,10,6\n' +
