@@ -16,9 +16,9 @@ function getBoxData() {
     // ignore and continue to hardcoded fallback
   }
 
-  // Fallback to embedded defaults if boxes.html missing/empty
+  // Fallback to embedded defaults (1 = best, 10 = worst) kept in sync with boxes.html
   var fallbackYaml = [
-    '# Boxes and feature ratings (1=worst, 10=best)',
+    '# Boxes and feature ratings (1 = best, 10 = worst)',
     'features:',
     '  - Speed',
     '  - Full quality audio (may be PCM decode on box)',
@@ -32,60 +32,82 @@ function getBoxData() {
     '  - Cost',
     'boxes:',
     '  Shield:',
-    '    Speed: 10',
-    '    Full quality audio (may be PCM decode on box): 10',
-    '    Passthrough audio: 10',
-    '    Modern video codec support: 1',
-    '    Conversions of all formats to LLDV/DV: 1',
-    '    Single box for streaming and local media: 10',
-    '    Robustness: 10',
-    '    OS/Software Control: 10',
-    '    Vendor support: 3',
-    '    Cost: 3',
-    '  Fire Cube 3:',
-    '    Speed: 3',
-    '    Full quality audio (may be PCM decode on box): 7',
-    '    Passthrough audio: 7',
-    '    Modern video codec support: 10',
-    '    Conversions of all formats to LLDV/DV: 10',
-    '    Single box for streaming and local media: 10',
-    '    Robustness: 10',
-    '    OS/Software Control: 3',
-    '    Vendor support: 10',
-    '    Cost: 6',
-    '  Homatics Box R:',
-    '    Speed: 6',
-    '    Full quality audio (may be PCM decode on box): 10',
-    '    Passthrough audio: 10',
-    '    Modern video codec support: 10',
-    '    Conversions of all formats to LLDV/DV: 10',
-    '    Single box for streaming and local media: 10',
-    '    Robustness: 7',
-    '    OS/Software Control: 9',
-    '    Vendor support: 3',
-    '    Cost: 5',
-    '  Apple TV:',
-    '    Speed: 9',
-    '    Full quality audio (may be PCM decode on box): 10',
-    '    Passthrough audio: 4',
-    '    Modern video codec support: 10',
-    '    Conversions of all formats to LLDV/DV: 10',
-    '    Single box for streaming and local media: 7',
-    '    Robustness: 10',
-    '    OS/Software Control: 1',
-    '    Vendor support: 10',
-    '    Cost: 6',
-    '  Two box solutions:',
-    '    Speed: 8',
-    '    Full quality audio (may be PCM decode on box): 10',
-    '    Passthrough audio: 10',
+    '    Speed: 1',
+    '    Full quality audio (may be PCM decode on box): 1',
+    '    Passthrough audio: 1',
     '    Modern video codec support: 10',
     '    Conversions of all formats to LLDV/DV: 10',
     '    Single box for streaming and local media: 1',
-    '    Robustness: 10',
+    '    Robustness: 1',
+    '    OS/Software Control: 1',
+    '    Vendor support: 8',
+    '    Cost: 8',
+    '  Fire Cube 3:',
+    '    Speed: 8',
+    '    Full quality audio (may be PCM decode on box): 4',
+    '    Passthrough audio: 4',
+    '    Modern video codec support: 1',
+    '    Conversions of all formats to LLDV/DV: 1',
+    '    Single box for streaming and local media: 1',
+    '    Robustness: 1',
+    '    OS/Software Control: 8',
+    '    Vendor support: 1',
+    '    Cost: 5',
+    '  Homatics Box R:',
+    '    Speed: 5',
+    '    Full quality audio (may be PCM decode on box): 1',
+    '    Passthrough audio: 1',
+    '    Modern video codec support: 1',
+    '    Conversions of all formats to LLDV/DV: 1',
+    '    Single box for streaming and local media: 1',
+    '    Robustness: 4',
+    '    OS/Software Control: 2',
+    '    Vendor support: 8',
+    '    Cost: 6',
+    '  Apple TV:',
+    '    Speed: 2',
+    '    Full quality audio (may be PCM decode on box): 1',
+    '    Passthrough audio: 7',
+    '    Modern video codec support: 1',
+    '    Conversions of all formats to LLDV/DV: 1',
+    '    Single box for streaming and local media: 4',
+    '    Robustness: 1',
     '    OS/Software Control: 10',
-    '    Vendor support: 10',
-    '    Cost: 1'
+    '    Vendor support: 1',
+    '    Cost: 5',
+    '  Onn:',
+    '    Speed: 5',
+    '    Full quality audio (may be PCM decode on box): 7',
+    '    Passthrough audio: 10',
+    '    Modern video codec support: 1',
+    '    Conversions of all formats to LLDV/DV: 1',
+    '    Single box for streaming and local media: 1',
+    '    Robustness: 1',
+    '    OS/Software Control: 1',
+    '    Vendor support: 3',
+    '    Cost: 1',
+    '  Google Streamer:',
+    '    Speed: 5',
+    '    Full quality audio (may be PCM decode on box): 7',
+    '    Passthrough audio: 10',
+    '    Modern video codec support: 1',
+    '    Conversions of all formats to LLDV/DV: 1',
+    '    Single box for streaming and local media: 1',
+    '    Robustness: 1',
+    '    OS/Software Control: 1',
+    '    Vendor support: 3',
+    '    Cost: 2',
+    '  Two box solutions:',
+    '    Speed: 3',
+    '    Full quality audio (may be PCM decode on box): 1',
+    '    Passthrough audio: 1',
+    '    Modern video codec support: 1',
+    '    Conversions of all formats to LLDV/DV: 1',
+    '    Single box for streaming and local media: 10',
+    '    Robustness: 1',
+    '    OS/Software Control: 1',
+    '    Vendor support: 1',
+    '    Cost: 10'
   ].join('\n');
   return parseYamlData(fallbackYaml);
 }
@@ -170,9 +192,8 @@ function calculateRecommendation(userWeights) {
     for (var i = 0; i < boxScores.length; i++) {
       // Importance: 1 (most important) -> weight 10, 10 (least) -> weight 1
       var weight = 11 - userWeights[i];
-      // Device ratings are now aligned so that 1 = best, 10 = worst.
-      // Existing data in YAML is 10 = best, so convert: ratingLowIsBest = 11 - ratingHighIsBest
-      var ratingLowIsBest = 11 - boxScores[i];
+      // Device ratings already use 1 = best, 10 = worst
+      var ratingLowIsBest = boxScores[i];
       totalScore += ratingLowIsBest * weight;
     }
     
@@ -186,15 +207,14 @@ function calculateRecommendation(userWeights) {
   var range = maxScore - minScore;
   
   // Normalize to 1-10 scale (1 = best, 10 = worst)
-  // Higher raw score is better, so maxScore should map to 1
   var normalizedResults = {};
   for (var boxName in rawScores) {
     if (range === 0) {
       // All boxes have the same score
       normalizedResults[boxName] = 5.5;
     } else {
-      // Map: highest raw score (best) -> 1, lowest raw score (worst) -> 10
-      normalizedResults[boxName] = 1 + (9 * (maxScore - rawScores[boxName]) / range);
+      // Map: lowest raw score (best) -> 1, highest raw score (worst) -> 10
+      normalizedResults[boxName] = 1 + (9 * (rawScores[boxName] - minScore) / range);
     }
   }
   

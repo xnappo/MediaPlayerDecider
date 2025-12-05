@@ -220,9 +220,12 @@
     </button>
     
     <div id="results"></div>
+
+    <div id="debug" style="margin-top: 12px; font-size: 12px; color: #888;"></div>
     
     <div class="footer">
       <p>📍 <a href="https://github.com/xnappo/MediaPlayerDecider" target="_blank">View on GitHub</a></p>
+      <p style="font-size:12px;color:#777;">Build: webapp @34</p>
     </div>
   </div>
 
@@ -233,11 +236,24 @@
     window.onload = function() {
       google.script.run
         .withSuccessHandler(initializeSliders)
+        .withFailureHandler(function(err) { handleError(err, 'loading box data'); })
         .getBoxData();
     };
+
+    function handleError(err, context) {
+      var msg = (context ? 'Error ' + context + ': ' : 'Error: ') + (err && err.message ? err.message : err);
+      console.error(msg);
+      var resultsDiv = document.getElementById('results');
+      if (resultsDiv) {
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div class="loading" style="color:#ff6b6b;">' + msg + '</div>';
+      }
+    }
     
     function initializeSliders(data) {
+      console.log('Loaded box data:', data);
       boxData = data;
+      updateDebug(data);
       var container = document.getElementById('features-container');
       
       data.features.forEach(function(feature, index) {
@@ -264,6 +280,13 @@
         container.appendChild(featureDiv);
       });
     }
+
+    function updateDebug(data) {
+      var debug = document.getElementById('debug');
+      if (!debug || !data) return;
+      var boxNames = Object.keys(data.boxes || {});
+      debug.textContent = 'Debug: boxes loaded ' + boxNames.length + ' [' + boxNames.join(', ') + ']';
+    }
     
     function updateValue(index) {
       var slider = document.getElementById('slider-' + index);
@@ -287,6 +310,7 @@
       // Call server-side function
       google.script.run
         .withSuccessHandler(displayResults)
+        .withFailureHandler(function(err) { handleError(err, 'calculating recommendation'); })
         .calculateRecommendation(userWeights);
     }
     
