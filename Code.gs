@@ -5,17 +5,15 @@ function doGet() {
 }
 
 function getBoxData() {
-  // Read box data from CSV file in the project
-  try {
-    var csvContent = HtmlService.createHtmlOutput('').getBlob().getAs('text/plain').getDataAsString();
-  } catch(e) {
-    // If CSV can't be read directly, parse it from the default data
-    return getDefaultBoxData();
-  }
+  // CSV data embedded in the code (synced from boxes.csv in GitHub repo)
+  var csvData = `Box,Full quality audio (may be PCM decode on box),Passthrough audio,Modern video codec support,Conversions of all formats to LLDV/DV,Single box for streaming and local media,Robustness,OS/Software Control,Vendor support,Cost
+Shield,10,10,1,1,10,10,10,3,3
+Fire Cube 3,7,7,10,10,10,10,3,10,6
+Homatics Box R,10,10,10,10,10,7,9,3,5
+Apple TV,10,4,10,10,7,10,1,10,6
+Two box solution,10,10,10,10,1,10,10,10,1`;
   
-  // For Google Apps Script, we'll use the default data
-  // In production, you would read from a CSV file stored in Google Drive
-  return getDefaultBoxData();
+  return parseCSV(csvData);
 }
 
 function parseCSV(csv) {
@@ -41,29 +39,6 @@ function parseCSV(csv) {
   };
 }
 
-function getDefaultBoxData() {
-  // Default data fallback if sheet is not found
-  return {
-    features: [
-      'Full quality audio (may be PCM decode on box)',
-      'Passthrough audio',
-      'Modern video codec support',
-      'Conversions of all formats to LLDV/DV',
-      'Single box for streaming and local media',
-      'Robustness',
-      'OS/Software Control',
-      'Vendor support',
-      'Cost'
-    ],
-    boxes: {
-      'Shield': [10, 10, 1, 1, 10, 10, 10, 3, 3],
-      'Fire Cube 3': [7, 7, 10, 10, 10, 10, 3, 10, 6],
-      'Homatics Box R': [10, 10, 10, 10, 10, 7, 9, 3, 5],
-      'Apple TV': [10, 4, 10, 10, 7, 10, 1, 10, 6],
-      'Two box solution': [10, 10, 10, 10, 1, 10, 10, 10, 1]
-    }
-  };
-}
 
 function calculateRecommendation(userWeights) {
   var data = getBoxData();
