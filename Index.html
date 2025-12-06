@@ -220,6 +220,11 @@
       text-decoration: underline;
     }
 
+    /* Mobile test indicator */
+    #mobile-test {
+      display: none;
+    }
+
     /* Mobile responsive */
     @media (max-width: 768px) {
       body {
@@ -285,6 +290,10 @@
       .footer {
         margin-top: 30px;
         font-size: 12px;
+      }
+
+      #mobile-test {
+        display: block !important;
       }
     }
 
@@ -353,6 +362,8 @@
       <br>
       <a href="https://www.avsforum.com/threads/mediabox-decider-tool.3337142/" target="_blank" rel="noopener noreferrer">Learn more about the Media Box Decider tool</a>
     </p>
+    
+    <div id="mobile-test" style="display: none; background: #4a9eff; color: #1a1a1a; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center; font-weight: bold;">📱 Mobile layout detected</div>
     
     <div id="features-container"></div>
     
