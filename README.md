@@ -4,6 +4,8 @@
 - **Code.gs** - Backend logic for data and calculations
 - **Index.html** - Frontend web interface
 
+More information: https://www.avsforum.com/threads/mediabox-decider-tool.3337142/
+
 ## How to Deploy:
 
 ### Option 1: Using Clasp (Recommended for development)
