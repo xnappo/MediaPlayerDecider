@@ -60,7 +60,7 @@ function getDefaultBoxData() {
       "Homatics Box R 4K Plus": [5, 1, 1, 1, 1, 1, 4, 2, 8, 6],
       "Apple TV": [2, 1, 10, 1, 1, 4, 1, 10, 1, 5],
       "Onn": [5, 7, 10, 1, 1, 1, 1, 1, 3, 1],
-      "Google Streamer": [5, 7, 10, 1, 1, 1, 1, 1, 3, 2],
+      "Google TV Streamer": [5, 7, 10, 1, 1, 1, 1, 1, 3, 2],
       "Roku Ultra": [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
       "Two box solutions": [3, 1, 1, 1, 1, 10, 1, 1, 1, 10]
     },
@@ -70,7 +70,7 @@ function getDefaultBoxData() {
       "Homatics Box R 4K Plus": "https://example.com/homatics-box-r-4k-plus",
       "Apple TV": "https://example.com/apple-tv",
       "Onn": "https://example.com/onn",
-      "Google Streamer": "https://example.com/google-streamer",
+      "Google TV Streamer": "https://example.com/google-streamer",
       "Roku Ultra": "https://example.com/roku-ultra",
       "Two box solutions": "https://example.com/two-box-solutions"
     }

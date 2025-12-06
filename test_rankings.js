@@ -40,7 +40,7 @@ const boxData = {
       speed: 5, audio_qual: 7, audio_pass: 10, video_codec: 1, video_convert: 1,
       box_single: 1, robust: 1, os_control: 1, vendor: 3, cost: 1
     },
-    'Google Streamer': {
+    'Google TV Streamer': {
       speed: 5, audio_qual: 7, audio_pass: 10, video_codec: 1, video_convert: 1,
       box_single: 1, robust: 1, os_control: 1, vendor: 3, cost: 2
     },
@@ -59,7 +59,7 @@ const boxData = {
     'Homatics Box R 4K Plus': 'https://example.com/homatics-box-r-4k-plus',
     'Apple TV': 'https://example.com/apple-tv',
     'Onn': 'https://example.com/onn',
-    'Google Streamer': 'https://example.com/google-streamer',
+    'Google TV Streamer': 'https://example.com/google-streamer',
     'Roku Ultra': 'https://example.com/roku-ultra',
     'Two box solutions': 'https://example.com/two-box-solutions'
   }
