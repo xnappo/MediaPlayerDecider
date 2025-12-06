@@ -225,9 +225,9 @@
   <div class="container">
     <h1>📦 Streaming Box Recommendation Tool</h1>
     <p class="subtitle">
-      Rate the importance of each feature (1 = Most Important, 10 = Least Important)
+      Drag each slider from "Essential" (left) to "Doesn't Matter" (right) to rate your priorities.
       <br>
-      <a href="https://www.avsforum.com/threads/mediabox-decider-tool.3337142/" target="_blank" rel="noopener noreferrer" style="color:#7bb3ff;">Learn more about the Media Box Decider tool</a>
+      <a href="https://www.avsforum.com/threads/mediabox-decider-tool.3337142/" target="_blank" rel="noopener noreferrer">Learn more about the Media Box Decider tool</a>
     </p>
     
     <div id="features-container"></div>
@@ -280,7 +280,6 @@
         featureDiv.innerHTML = `
           <div class="feature-label">
             <span>${feature}</span>
-            <span class="importance-value" id="value-${index}">5</span>
           </div>
           <input type="range" 
                  id="slider-${index}" 
@@ -289,8 +288,8 @@
                  value="5" 
                  oninput="updateValue(${index})">
           <div class="slider-labels">
-            <span>Most Important (1)</span>
-            <span>Least Important (10)</span>
+            <span>Essential</span>
+            <span>Doesn't Matter</span>
           </div>
         `;
         
@@ -306,9 +305,7 @@
     }
     
     function updateValue(index) {
-      var slider = document.getElementById('slider-' + index);
-      var valueDisplay = document.getElementById('value-' + index);
-      valueDisplay.textContent = slider.value;
+      // Slider updates in real-time but no display needed
     }
     
     function calculateRecommendation() {
