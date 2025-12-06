@@ -408,8 +408,8 @@
           <input type="range" 
                  id="slider-${index}" 
                  min="1" 
-                 max="10" 
-                 value="5" 
+                 max="5" 
+                 value="3" 
                  oninput="updateValue(${index})">
           <div class="slider-labels">
             <span>Essential</span>
@@ -433,11 +433,14 @@
     }
     
     function calculateRecommendation() {
-      // Collect all user weights
+      // Collect all user weights and map 1-5 scale to 1-10 scale
       var userWeights = [];
       for (var i = 0; i < boxData.features.length; i++) {
         var slider = document.getElementById('slider-' + i);
-        userWeights.push(parseInt(slider.value));
+        var sliderValue = parseInt(slider.value); // 1-5
+        // Map 1-5 to 1-10: 1->1, 2->3, 3->5, 4->7, 5->9
+        var mappedValue = (sliderValue - 1) * 2 + 1;
+        userWeights.push(mappedValue);
       }
       
       // Show loading
