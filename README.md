@@ -19,6 +19,13 @@ More information: https://www.avsforum.com/threads/mediabox-decider-tool.3337142
 7. To pull from Google: `wsl npx @google/clasp pull`
 8. Deploy via Google Apps Script editor or use `clasp deploy`
 
+Quick deploy (existing web app):
+
+```
+npx @google/clasp push
+npx @google/clasp deploy -i AKfycbyCkks6ZPDl4wT9p75YSXFhHVW7gEKeEzm9ETSudhsiW7d9rKEMwTSuLqD8L8uZvNui -d auto
+```
+
 ### Option 2: Manual (One-time setup)
 
 1. Go to [script.google.com](https://script.google.com)
