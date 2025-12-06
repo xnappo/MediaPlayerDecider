@@ -44,10 +44,24 @@ const boxData = {
       speed: 5, audio_qual: 7, audio_pass: 10, video_codec: 1, video_convert: 1,
       box_single: 1, robust: 1, os_control: 1, vendor: 3, cost: 2
     },
+    'Roku Ultra': {
+      speed: 5, audio_qual: 5, audio_pass: 5, video_codec: 5, video_convert: 5,
+      box_single: 5, robust: 5, os_control: 5, vendor: 5, cost: 5
+    },
     'Two box solutions': {
       speed: 3, audio_qual: 1, audio_pass: 1, video_codec: 1, video_convert: 1,
       box_single: 10, robust: 1, os_control: 1, vendor: 1, cost: 10
     }
+  },
+  links: {
+    'Shield': 'https://example.com/shield',
+    'Fire Cube 3': 'https://example.com/fire-cube-3',
+    'Homatics Box R 4K Plus': 'https://example.com/homatics-box-r-4k-plus',
+    'Apple TV': 'https://example.com/apple-tv',
+    'Onn': 'https://example.com/onn',
+    'Google Streamer': 'https://example.com/google-streamer',
+    'Roku Ultra': 'https://example.com/roku-ultra',
+    'Two box solutions': 'https://example.com/two-box-solutions'
   }
 };
 

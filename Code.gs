@@ -26,6 +26,7 @@ function convertJsonToBoxData(json) {
   var features = json.featureLabels || [];
   var keys = json.featureKeys || [];
   var boxes = {};
+  var links = json.links || {};
   
   for (var boxName in json.boxes) {
     var boxObj = json.boxes[boxName];
@@ -35,7 +36,7 @@ function convertJsonToBoxData(json) {
     });
   }
   
-  return { features: features, boxes: boxes };
+  return { features: features, boxes: boxes, links: links };
 }
 
 function getDefaultBoxData() {
@@ -60,7 +61,18 @@ function getDefaultBoxData() {
       "Apple TV": [2, 1, 10, 1, 1, 4, 1, 10, 1, 5],
       "Onn": [5, 7, 10, 1, 1, 1, 1, 1, 3, 1],
       "Google Streamer": [5, 7, 10, 1, 1, 1, 1, 1, 3, 2],
+      "Roku Ultra": [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
       "Two box solutions": [3, 1, 1, 1, 1, 10, 1, 1, 1, 10]
+    },
+    links: {
+      "Shield": "https://example.com/shield",
+      "Fire Cube 3": "https://example.com/fire-cube-3",
+      "Homatics Box R 4K Plus": "https://example.com/homatics-box-r-4k-plus",
+      "Apple TV": "https://example.com/apple-tv",
+      "Onn": "https://example.com/onn",
+      "Google Streamer": "https://example.com/google-streamer",
+      "Roku Ultra": "https://example.com/roku-ultra",
+      "Two box solutions": "https://example.com/two-box-solutions"
     }
   };
 }

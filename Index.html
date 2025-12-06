@@ -318,6 +318,7 @@
       // Find the winner (lowest score)
       var minScore = Infinity;
       var winner = '';
+      var links = (boxData && boxData.links) ? boxData.links : {};
       for (var box in scores) {
         if (scores[box] < minScore) {
           minScore = scores[box];
@@ -331,13 +332,17 @@
       });
       
       // Build results HTML
-      var html = '<div class="recommendation">🏆 Recommended: ' + winner + '</div>';
+      var winnerLink = links[winner];
+      var winnerLabel = winnerLink ? '<a href="' + winnerLink + '" target="_blank" rel="noopener noreferrer">' + winner + '</a>' : winner;
+      var html = '<div class="recommendation">🏆 Recommended: ' + winnerLabel + '</div>';
       html += '<table class="scores-table">';
       html += '<tr><th>Box</th><th>Match Quality</th></tr>';
       
       sortedBoxes.forEach(function(box) {
         var isWinner = box === winner ? ' winner' : '';
         var score = scores[box];
+        var link = links[box];
+        var boxLabel = link ? '<a href="' + link + '" target="_blank" rel="noopener noreferrer">' + box + '</a>' : box;
         // Convert score to match quality percentage (1 = 100%, 10 = 0%)
         var matchQuality = Math.max(0, Math.min(100, ((11 - score) / 9) * 100));
         
@@ -347,7 +352,7 @@
         var starDisplay = '★'.repeat(stars) + '☆'.repeat(5 - stars);
         
         html += '<tr class="' + isWinner + '">';
-        html += '<td>' + box + '</td>';
+        html += '<td>' + boxLabel + '</td>';
         html += '<td style="font-size: 24px; color: #ffd700;">' + starDisplay + '</td>';
         html += '</tr>';
       });
