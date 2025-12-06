@@ -225,6 +225,13 @@
       display: none;
     }
 
+    /* High-DPI phones (Galaxy S21 Ultra, iPhone 12 Pro Max, etc.) */
+    @media (max-width: 1024px) and (hover: none) and (pointer: coarse) {
+      #mobile-test {
+        display: block !important;
+      }
+    }
+
     /* Mobile responsive */
     @media (max-width: 768px) {
       body {
@@ -298,6 +305,63 @@
     }
 
     @media (max-width: 480px) {
+      body {
+        padding: 8px;
+      }
+
+      .container {
+        padding: 12px;
+      }
+
+      h1 {
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+
+      .subtitle {
+        font-size: 13px;
+        margin-bottom: 15px;
+      }
+
+      .feature-row {
+        margin-bottom: 16px;
+        padding: 10px;
+      }
+
+      .feature-label {
+        font-size: 18px;
+        margin-bottom: 8px;
+      }
+
+      .slider-labels {
+        font-size: 14px;
+      }
+
+      .calculate-btn {
+        padding: 16px 24px;
+        font-size: 16px;
+        width: 95%;
+      }
+
+      .recommendation {
+        font-size: 18px;
+        margin-bottom: 15px;
+      }
+
+      .scores-table th,
+      .scores-table td {
+        padding: 8px 6px;
+        font-size: 13px;
+      }
+
+      .footer {
+        margin-top: 20px;
+        font-size: 11px;
+      }
+    }
+
+    /* High-DPI phones (Galaxy S21 Ultra, etc.) - touch device fallback */
+    @media (max-width: 1024px) and (hover: none) and (pointer: coarse) {
       body {
         padding: 8px;
       }
